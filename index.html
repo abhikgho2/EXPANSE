@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0f172a">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2331/2331941.png" />
   <title>Daily Expense Tracker</title>
   <style>
     :root {
@@ -55,7 +58,6 @@
 
     .actions { display: flex; gap: 10px; margin-top: 16px; }
     .btn-sec { flex: 1; padding: 10px; background: #1e293b; color: var(--muted); border: 1px solid #334155; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
-    .btn-download { width: 100%; margin-top: 12px; padding: 12px; background: #8b5cf6; color: #ffffff; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -67,26 +69,26 @@
 
   <div class="hero-card">
     <div class="hero-label">Daily Running Expenditure</div>
-    <div class="hero-amount" id="dailyTotal">₹13,130</div>
-    <div class="hero-sub">Fuel, groceries, dining, utilities &amp; routine daily spends</div>
+    <div class="hero-amount" id="dailyTotal">₹0</div>
+    <div class="hero-sub">Fuel, groceries, dining, utilities & routine daily spends</div>
   </div>
 
   <div class="grid-2">
     <div class="mini-card">
-      <div class="mini-label">Fixed &amp; EMI</div>
-      <div class="mini-val" id="fixedTotal" style="color: var(--fixed);">₹20,741</div>
+      <div class="mini-label">Fixed & EMI</div>
+      <div class="mini-val" id="fixedTotal" style="color: var(--fixed);">₹0</div>
     </div>
     <div class="mini-card">
-      <div class="mini-label">Projects &amp; Milestones</div>
-      <div class="mini-val" id="milestoneTotal" style="color: var(--milestone);">₹1,22,203</div>
+      <div class="mini-label">Projects & Milestones</div>
+      <div class="mini-val" id="milestoneTotal" style="color: var(--milestone);">₹0</div>
     </div>
   </div>
 
   <div class="form-card">
     <div class="form-title">+ Log New Spend</div>
     <div class="form-row">
-      <input type="date" id="expDate" required="">
-      <input type="number" id="expAmount" placeholder="Amount (₹)" inputmode="decimal" required="">
+      <input type="date" id="expDate" required />
+      <input type="number" id="expAmount" placeholder="Amount (₹)" inputmode="decimal" required />
     </div>
     <div class="form-row">
       <select id="expType">
@@ -95,16 +97,16 @@
         <option value="Milestone">Project / Milestone</option>
       </select>
       <select id="expCat">
-        <option value="Food &amp; Groceries">Food &amp; Groceries</option>
-        <option value="Fuel &amp; Transit">Fuel &amp; Transit</option>
-        <option value="Utilities &amp; Bills">Utilities &amp; Bills</option>
-        <option value="Home &amp; Interior">Home &amp; Interior</option>
+        <option value="Food & Groceries">Food & Groceries</option>
+        <option value="Fuel & Transit">Fuel & Transit</option>
+        <option value="Utilities & Bills">Utilities & Bills</option>
+        <option value="Home & Interior">Home & Interior</option>
         <option value="Loan / EMI">Loan / EMI</option>
-        <option value="Shopping &amp; Festival">Shopping &amp; Festival</option>
+        <option value="Shopping & Festival">Shopping & Festival</option>
         <option value="Other">Other</option>
       </select>
     </div>
-    <input type="text" id="expNote" placeholder="Short note (e.g., Bike fuel, Swiggy, Market)" style="margin-bottom: 10px;">
+    <input type="text" id="expNote" placeholder="Short note (e.g., Bike fuel, Swiggy, Market)" style="margin-bottom: 10px;" />
     <button class="primary" onclick="addExpense()">Save Expense</button>
   </div>
 
@@ -115,53 +117,18 @@
     <button class="tab" onclick="setFilter('Milestone', this)">Milestones</button>
   </div>
 
-  <div id="logList"><div class="log-item type-Daily">
-          <div>
-            <div class="log-title">October Baseline Running Spend (Fuel, Utilities, Food)</div>
-            <div class="log-meta">2026-10-25 • Food &amp; Groceries (Daily)</div>
-          </div>
-          <div class="log-right">
-            <span class="log-amt">₹13,130</span>
-            <button class="del-btn" onclick="deleteExpense(4)" title="Delete">✕</button>
-          </div>
-        </div><div class="log-item type-Milestone">
-          <div>
-            <div class="log-title">Festival Shopping &amp; Registry Outlays</div>
-            <div class="log-meta">2026-10-18 • Shopping &amp; Festival (Milestone)</div>
-          </div>
-          <div class="log-right">
-            <span class="log-amt">₹22,203</span>
-            <button class="del-btn" onclick="deleteExpense(3)" title="Delete">✕</button>
-          </div>
-        </div><div class="log-item type-Fixed">
-          <div>
-            <div class="log-title">Housing Loan Monthly EMI</div>
-            <div class="log-meta">2026-10-10 • Loan / EMI (Fixed)</div>
-          </div>
-          <div class="log-right">
-            <span class="log-amt">₹20,741</span>
-            <button class="del-btn" onclick="deleteExpense(2)" title="Delete">✕</button>
-          </div>
-        </div><div class="log-item type-Milestone">
-          <div>
-            <div class="log-title">Home Interior Project Outlay</div>
-            <div class="log-meta">2026-10-05 • Home &amp; Interior (Milestone)</div>
-          </div>
-          <div class="log-right">
-            <span class="log-amt">₹1,00,000</span>
-            <button class="del-btn" onclick="deleteExpense(1)" title="Delete">✕</button>
-          </div>
-        </div></div>
+  <div id="logList"></div>
 
   <div class="actions">
     <button class="btn-sec" onclick="exportCSV()">Export CSV</button>
     <button class="btn-sec" onclick="resetPreloaded()">Restore Preloaded</button>
   </div>
 
-  <!-- One-Tap Self-Download Button -->
-  <button class="btn-download" id="dlBtn" onclick="downloadSelfAsHTML()">📥 Download index.html File</button>
-
   <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+
     const STORAGE_KEY = 'pwa_expenses_v1';
     let currentFilter = 'All';
 
@@ -274,19 +241,7 @@
       a.click();
     }
 
-    function downloadSelfAsHTML() {
-      const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'index.html';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
-
     render();
   </script>
-
-
-</body></html>
+</body>
+</html>
