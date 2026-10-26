@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Daily Expense Tracker</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --daily: #10b981;
+      --fixed: #f59e0b;
+      --milestone: #8b5cf6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; padding-bottom: 90px; max-width: 500px; margin: 0 auto; }
+    
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    h1 { font-size: 1.25rem; font-weight: 700; }
+    .badge { background: rgba(56, 189, 248, 0.15); color: var(--accent); padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+
+    .hero-card { background: linear-gradient(135deg, #065f46, #047857); padding: 20px; border-radius: 16px; margin-bottom: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+    .hero-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #a7f3d0; }
+    .hero-amount { font-size: 2.1rem; font-weight: 800; margin: 6px 0; color: #ffffff; }
+    .hero-sub { font-size: 0.78rem; color: #d1fae5; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .mini-card { background: var(--card); padding: 14px; border-radius: 12px; border: 1px solid #334155; }
+    .mini-label { font-size: 0.75rem; color: var(--muted); }
+    .mini-val { font-size: 1.15rem; font-weight: 700; margin-top: 4px; }
+
+    .form-card { background: var(--card); padding: 16px; border-radius: 14px; margin-bottom: 20px; border: 1px solid #334155; }
+    .form-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; color: var(--accent); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    input, select { width: 100%; padding: 11px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: var(--text); font-size: 0.9rem; }
+    button.primary { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-top: 4px; }
+
+    .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
+    .tab { padding: 7px 14px; border-radius: 999px; background: var(--card); color: var(--muted); font-size: 0.8rem; font-weight: 600; border: 1px solid #334155; white-space: nowrap; cursor: pointer; }
+    .tab.active { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+
+    .log-item { background: var(--card); padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--daily); }
+    .log-item.type-Fixed { border-left-color: var(--fixed); }
+    .log-item.type-Milestone { border-left-color: var(--milestone); }
+    .log-title { font-size: 0.92rem; font-weight: 600; }
+    .log-meta { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .log-right { text-align: right; display: flex; align-items: center; gap: 10px; }
+    .log-amt { font-size: 0.98rem; font-weight: 700; }
+    .del-btn { background: none; border: none; color: #64748b; font-size: 1rem; cursor: pointer; padding: 4px; }
+
+    .actions { display: flex; gap: 10px; margin-top: 16px; }
+    .btn-sec { flex: 1; padding: 10px; background: #1e293b; color: var(--muted); border: 1px solid #334155; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .btn-download { width: 100%; margin-top: 12px; padding: 12px; background: #8b5cf6; color: #ffffff; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Expense Tracker</h1>
+    <span class="badge">Oct 2026</span>
+  </header>
+
+  <div class="hero-card">
+    <div class="hero-label">Daily Running Expenditure</div>
+    <div class="hero-amount" id="dailyTotal">₹13,130</div>
+    <div class="hero-sub">Fuel, groceries, dining, utilities &amp; routine daily spends</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="mini-card">
+      <div class="mini-label">Fixed &amp; EMI</div>
+      <div class="mini-val" id="fixedTotal" style="color: var(--fixed);">₹20,741</div>
+    </div>
+    <div class="mini-card">
+      <div class="mini-label">Projects &amp; Milestones</div>
+      <div class="mini-val" id="milestoneTotal" style="color: var(--milestone);">₹1,22,203</div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">+ Log New Spend</div>
+    <div class="form-row">
+      <input type="date" id="expDate" required="">
+      <input type="number" id="expAmount" placeholder="Amount (₹)" inputmode="decimal" required="">
+    </div>
+    <div class="form-row">
+      <select id="expType">
+        <option value="Daily">Daily Running</option>
+        <option value="Fixed">Fixed / EMI</option>
+        <option value="Milestone">Project / Milestone</option>
+      </select>
+      <select id="expCat">
+        <option value="Food &amp; Groceries">Food &amp; Groceries</option>
+        <option value="Fuel &amp; Transit">Fuel &amp; Transit</option>
+        <option value="Utilities &amp; Bills">Utilities &amp; Bills</option>
+        <option value="Home &amp; Interior">Home &amp; Interior</option>
+        <option value="Loan / EMI">Loan / EMI</option>
+        <option value="Shopping &amp; Festival">Shopping &amp; Festival</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <input type="text" id="expNote" placeholder="Short note (e.g., Bike fuel, Swiggy, Market)" style="margin-bottom: 10px;">
+    <button class="primary" onclick="addExpense()">Save Expense</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setFilter('All', this)">All Logs</button>
+    <button class="tab" onclick="setFilter('Daily', this)">Daily Running</button>
+    <button class="tab" onclick="setFilter('Fixed', this)">Fixed / EMI</button>
+    <button class="tab" onclick="setFilter('Milestone', this)">Milestones</button>
+  </div>
+
+  <div id="logList"><div class="log-item type-Daily">
+          <div>
+            <div class="log-title">October Baseline Running Spend (Fuel, Utilities, Food)</div>
+            <div class="log-meta">2026-10-25 • Food &amp; Groceries (Daily)</div>
+          </div>
+          <div class="log-right">
+            <span class="log-amt">₹13,130</span>
+            <button class="del-btn" onclick="deleteExpense(4)" title="Delete">✕</button>
+          </div>
+        </div><div class="log-item type-Milestone">
+          <div>
+            <div class="log-title">Festival Shopping &amp; Registry Outlays</div>
+            <div class="log-meta">2026-10-18 • Shopping &amp; Festival (Milestone)</div>
+          </div>
+          <div class="log-right">
+            <span class="log-amt">₹22,203</span>
+            <button class="del-btn" onclick="deleteExpense(3)" title="Delete">✕</button>
+          </div>
+        </div><div class="log-item type-Fixed">
+          <div>
+            <div class="log-title">Housing Loan Monthly EMI</div>
+            <div class="log-meta">2026-10-10 • Loan / EMI (Fixed)</div>
+          </div>
+          <div class="log-right">
+            <span class="log-amt">₹20,741</span>
+            <button class="del-btn" onclick="deleteExpense(2)" title="Delete">✕</button>
+          </div>
+        </div><div class="log-item type-Milestone">
+          <div>
+            <div class="log-title">Home Interior Project Outlay</div>
+            <div class="log-meta">2026-10-05 • Home &amp; Interior (Milestone)</div>
+          </div>
+          <div class="log-right">
+            <span class="log-amt">₹1,00,000</span>
+            <button class="del-btn" onclick="deleteExpense(1)" title="Delete">✕</button>
+          </div>
+        </div></div>
+
+  <div class="actions">
+    <button class="btn-sec" onclick="exportCSV()">Export CSV</button>
+    <button class="btn-sec" onclick="resetPreloaded()">Restore Preloaded</button>
+  </div>
+
+  <!-- One-Tap Self-Download Button -->
+  <button class="btn-download" id="dlBtn" onclick="downloadSelfAsHTML()">📥 Download index.html File</button>
+
+  <script>
+    const STORAGE_KEY = 'pwa_expenses_v1';
+    let currentFilter = 'All';
+
+    const defaultLogs = [
+      { id: 1, date: '2026-10-05', note: 'Home Interior Project Outlay', category: 'Home & Interior', type: 'Milestone', amount: 100000 },
+      { id: 2, date: '2026-10-10', note: 'Housing Loan Monthly EMI', category: 'Loan / EMI', type: 'Fixed', amount: 20741 },
+      { id: 3, date: '2026-10-18', note: 'Festival Shopping & Registry Outlays', category: 'Shopping & Festival', type: 'Milestone', amount: 22203 },
+      { id: 4, date: '2026-10-25', note: 'October Baseline Running Spend (Fuel, Utilities, Food)', category: 'Food & Groceries', type: 'Daily', amount: 13130 }
+    ];
+
+    let expenses = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultLogs;
+    document.getElementById('expDate').valueAsDate = new Date();
+
+    function formatINR(num) {
+      return '₹' + Number(num).toLocaleString('en-IN');
+    }
+
+    function render() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
+
+      let dailySum = 0, fixedSum = 0, mileSum = 0;
+      expenses.forEach(item => {
+        if (item.type === 'Daily') dailySum += Number(item.amount);
+        else if (item.type === 'Fixed') fixedSum += Number(item.amount);
+        else if (item.type === 'Milestone') mileSum += Number(item.amount);
+      });
+
+      document.getElementById('dailyTotal').innerText = formatINR(dailySum);
+      document.getElementById('fixedTotal').innerText = formatINR(fixedSum);
+      document.getElementById('milestoneTotal').innerText = formatINR(mileSum);
+
+      const listEl = document.getElementById('logList');
+      listEl.innerHTML = '';
+
+      const filtered = expenses
+        .filter(e => currentFilter === 'All' || e.type === currentFilter)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `log-item type-${item.type}`;
+        div.innerHTML = `
+          <div>
+            <div class="log-title">${item.note || item.category}</div>
+            <div class="log-meta">${item.date} • ${item.category} (${item.type})</div>
+          </div>
+          <div class="log-right">
+            <span class="log-amt">${formatINR(item.amount)}</span>
+            <button class="del-btn" onclick="deleteExpense(${item.id})" title="Delete">✕</button>
+          </div>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    function addExpense() {
+      const date = document.getElementById('expDate').value;
+      const amount = parseFloat(document.getElementById('expAmount').value);
+      const type = document.getElementById('expType').value;
+      const category = document.getElementById('expCat').value;
+      const note = document.getElementById('expNote').value.trim();
+
+      if (!date || isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid date and amount.');
+        return;
+      }
+
+      expenses.unshift({
+        id: Date.now(),
+        date,
+        amount,
+        type,
+        category,
+        note: note || category
+      });
+
+      document.getElementById('expAmount').value = '';
+      document.getElementById('expNote').value = '';
+      render();
+    }
+
+    function deleteExpense(id) {
+      expenses = expenses.filter(e => e.id !== id);
+      render();
+    }
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    }
+
+    function resetPreloaded() {
+      if (confirm('Restore default October baseline logs? This will reset current changes.')) {
+        expenses = [...defaultLogs];
+        render();
+      }
+    }
+
+    function exportCSV() {
+      let csv = 'Date,Type,Category,Note,Amount\n';
+      expenses.forEach(e => {
+        csv += `${e.date},${e.type},"${e.category}","${(e.note || '').replace(/"/g, '""')}",${e.amount}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'expenses_backup.csv';
+      a.click();
+    }
+
+    function downloadSelfAsHTML() {
+      const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    render();
+  </script>
+
+
+</body></html>
