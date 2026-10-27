@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#f1f5f9" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="manifest.json" />
@@ -11,118 +11,211 @@
   <title>Daily Expense Tracker</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --daily: #10b981;
-      --fixed: #f59e0b;
-      --milestone: #8b5cf6;
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+      --navy: #1B1F3B;
+      --maroon: #800020;
+      --daily: #059669;
+      --fixed: #d97706;
+      --milestone: #7c3aed;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 16px; padding-bottom: 90px; max-width: 500px; margin: 0 auto; }
+    body { background: var(--bg); color: var(--text); padding: 16px; padding-bottom: 95px; max-width: 500px; margin: 0 auto; }
     
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    h1 { font-size: 1.25rem; font-weight: 700; }
-    .badge { background: rgba(56, 189, 248, 0.15); color: var(--accent); padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+    h1 { font-size: 1.3rem; font-weight: 800; color: var(--navy); letter-spacing: -0.02em; }
+    
+    .month-select { padding: 7px 14px; border-radius: 999px; border: 2px solid var(--navy); background: #ffffff; color: var(--navy); font-size: 0.82rem; font-weight: 700; outline: none; cursor: pointer; box-shadow: 0 4px 10px rgba(27, 31, 59, 0.12); }
 
-    .hero-card { background: linear-gradient(135deg, #065f46, #047857); padding: 20px; border-radius: 16px; margin-bottom: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-    .hero-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #a7f3d0; }
-    .hero-amount { font-size: 2.1rem; font-weight: 800; margin: 6px 0; color: #ffffff; }
-    .hero-sub { font-size: 0.78rem; color: #d1fae5; }
+    .hero-card { background: linear-gradient(135deg, var(--navy), #2d346b); padding: 22px; border-radius: 18px; margin-bottom: 14px; box-shadow: 0 10px 25px rgba(27, 31, 59, 0.25); position: relative; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.15); }
+    .hero-card::after { content: ''; position: absolute; top: -50px; right: -50px; width: 120px; height: 120px; background: rgba(128, 0, 32, 0.35); border-radius: 50%; pointer-events: none; }
+    .hero-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #cbd5e1; font-weight: 600; }
+    .hero-amount { font-size: 2.2rem; font-weight: 800; margin: 6px 0; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .hero-sub { font-size: 0.78rem; color: #93c5fd; opacity: 0.95; display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
-    .mini-card { background: var(--card); padding: 14px; border-radius: 12px; border: 1px solid #334155; }
-    .mini-label { font-size: 0.75rem; color: var(--muted); }
-    .mini-val { font-size: 1.15rem; font-weight: 700; margin-top: 4px; }
+    /* Progress bar for daily spending */
+    .progress-bar-bg { background: rgba(255,255,255,0.2); height: 6px; border-radius: 3px; width: 100%; margin-top: 8px; overflow: hidden; }
+    .progress-bar-fill { background: #34d399; height: 100%; width: 0%; transition: width 0.3s ease; }
 
-    .form-card { background: var(--card); padding: 16px; border-radius: 14px; margin-bottom: 20px; border: 1px solid #334155; }
-    .form-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; color: var(--accent); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+    .mini-card { background: var(--card-bg); padding: 16px; border-radius: 14px; border: 1.5px solid var(--border); box-shadow: 0 6px 16px rgba(0,0,0,0.06); position: relative; overflow: hidden; }
+    .mini-card::before { content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: var(--maroon); }
+    .mini-label { font-size: 0.75rem; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+    .mini-val { font-size: 1.15rem; font-weight: 800; margin-top: 6px; color: var(--navy); }
+
+    /* Quick Tap Chips */
+    .quick-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 14px; }
+    .chip { background: #e2e8f0; color: var(--navy); padding: 6px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; border: none; white-space: nowrap; cursor: pointer; transition: background 0.2s; }
+    .chip:active { background: var(--maroon); color: #fff; }
+
+    .form-card { background: var(--card-bg); padding: 18px; border-radius: 16px; margin-bottom: 20px; border: 1.5px solid var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.07); }
+    .form-title { font-size: 0.92rem; font-weight: 800; margin-bottom: 12px; color: var(--maroon); display: flex; align-items: center; gap: 6px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    input, select { width: 100%; padding: 11px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: var(--text); font-size: 0.9rem; }
-    button.primary { width: 100%; padding: 12px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-top: 4px; }
+    input, select { width: 100%; padding: 11px; border-radius: 10px; border: 1.5px solid var(--border); background: #ffffff; color: var(--text); font-size: 0.9rem; font-weight: 500; outline: none; transition: border-color 0.2s; }
+    input:focus, select:focus { border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1); }
+    button.primary { width: 100%; padding: 13px; background: var(--maroon); color: #ffffff; border: none; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-top: 6px; box-shadow: 0 4px 12px rgba(128, 0, 32, 0.3); }
+
+    .search-box { width: 100%; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--card-bg); margin-bottom: 12px; font-size: 0.88rem; outline: none; }
 
     .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
-    .tab { padding: 7px 14px; border-radius: 999px; background: var(--card); color: var(--muted); font-size: 0.8rem; font-weight: 600; border: 1px solid #334155; white-space: nowrap; cursor: pointer; }
-    .tab.active { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+    .tab { padding: 7px 14px; border-radius: 999px; background: var(--card-bg); color: var(--muted); font-size: 0.8rem; font-weight: 700; border: 1.5px solid var(--border); white-space: nowrap; cursor: pointer; }
+    .tab.active { background: var(--navy); color: #ffffff; border-color: var(--navy); box-shadow: 0 3px 8px rgba(27, 31, 59, 0.25); }
 
-    .log-item { background: var(--card); padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--daily); }
+    .log-item { background: var(--card-bg); padding: 14px; border-radius: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1.5px solid var(--border); border-left: 6px solid var(--daily); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
     .log-item.type-Fixed { border-left-color: var(--fixed); }
     .log-item.type-Milestone { border-left-color: var(--milestone); }
-    .log-title { font-size: 0.92rem; font-weight: 600; }
-    .log-meta { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
-    .log-right { text-align: right; display: flex; align-items: center; gap: 10px; }
-    .log-amt { font-size: 0.98rem; font-weight: 700; }
-    .del-btn { background: none; border: none; color: #64748b; font-size: 1rem; cursor: pointer; padding: 4px; }
+    .log-title { font-size: 0.92rem; font-weight: 800; color: var(--navy); }
+    .log-meta { font-size: 0.75rem; color: var(--muted); margin-top: 3px; font-weight: 600; }
+    .log-right { text-align: right; display: flex; align-items: center; gap: 12px; }
+    .log-amt { font-size: 1.02rem; font-weight: 800; color: var(--text); }
+    .del-btn { background: #fee2e2; border: none; color: #dc2626; width: 28px; height: 28px; border-radius: 50%; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; }
 
-    .actions { display: flex; gap: 10px; margin-top: 16px; }
-    .btn-sec { flex: 1; padding: 10px; background: #1e293b; color: var(--muted); border: 1px solid #334155; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    /* Bottom Navigation Bar */
+    .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1.5px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; max-width: 500px; margin: 0 auto; box-shadow: 0 -4px 15px rgba(0,0,0,0.08); z-index: 100; }
+    .nav-btn { background: none; border: none; color: var(--muted); font-size: 0.72rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1; }
+    .nav-btn.active { color: var(--maroon); }
+    .nav-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    .action-card { background: var(--card-bg); padding: 16px; border-radius: 14px; border: 1.5px solid var(--border); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Expense Tracker</h1>
-    <span class="badge">Oct 2026</span>
-  </header>
-
-  <div class="hero-card">
-    <div class="hero-label">Daily Running Expenditure</div>
-    <div class="hero-amount" id="dailyTotal">₹0</div>
-    <div class="hero-sub">Fuel, groceries, dining, utilities & routine daily spends</div>
-  </div>
-
-  <div class="grid-2">
-    <div class="mini-card">
-      <div class="mini-label">Fixed & EMI</div>
-      <div class="mini-val" id="fixedTotal" style="color: var(--fixed);">₹0</div>
-    </div>
-    <div class="mini-card">
-      <div class="mini-label">Projects & Milestones</div>
-      <div class="mini-val" id="milestoneTotal" style="color: var(--milestone);">₹0</div>
-    </div>
-  </div>
-
-  <div class="form-card">
-    <div class="form-title">+ Log New Spend</div>
-    <div class="form-row">
-      <input type="date" id="expDate" required />
-      <input type="number" id="expAmount" placeholder="Amount (₹)" inputmode="decimal" required />
-    </div>
-    <div class="form-row">
-      <select id="expType">
-        <option value="Daily">Daily Running</option>
-        <option value="Fixed">Fixed / EMI</option>
-        <option value="Milestone">Project / Milestone</option>
+  <!-- MAIN VIEW -->
+  <div id="homeView" class="view-section active">
+    <header>
+      <h1>Expense Tracker</h1>
+      <select id="monthFilter" class="month-select" onchange="changeMonth()">
+        <option value="ALL">All Months (Lifetime)</option>
       </select>
-      <select id="expCat">
-        <option value="Food & Groceries">Food & Groceries</option>
-        <option value="Fuel & Transit">Fuel & Transit</option>
-        <option value="Utilities & Bills">Utilities & Bills</option>
-        <option value="Home & Interior">Home & Interior</option>
-        <option value="Loan / EMI">Loan / EMI</option>
-        <option value="Shopping & Festival">Shopping & Festival</option>
-        <option value="Other">Other</option>
-      </select>
+    </header>
+
+    <div class="hero-card">
+      <div class="hero-label">Daily Running Expenditure</div>
+      <div class="hero-amount" id="dailyTotal">₹0</div>
+      <div class="hero-sub">
+        <span id="dailyBudgetNote">Monthly Target: ₹15,000</span>
+        <span id="dailyAvgNote">Avg: ₹0/day</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
     </div>
-    <input type="text" id="expNote" placeholder="Short note (e.g., Bike fuel, Swiggy, Market)" style="margin-bottom: 10px;" />
-    <button class="primary" onclick="addExpense()">Save Expense</button>
+
+    <div class="grid-2">
+      <div class="mini-card">
+        <div class="mini-label">Fixed & EMI</div>
+        <div class="mini-val" id="fixedTotal" style="color: var(--fixed);">₹0</div>
+      </div>
+      <div class="mini-card" style="border-left-color: var(--navy);">
+        <div class="mini-label">Projects & Milestones</div>
+        <div class="mini-val" id="milestoneTotal" style="color: var(--milestone);">₹0</div>
+      </div>
+    </div>
+
+    <!-- Quick Tap Chips for Everyday Spends -->
+    <div class="quick-chips">
+      <span style="font-size: 0.75rem; font-weight: 700; color: var(--muted); align-self: center;">⚡ Quick Add:</span>
+      <button class="chip" onclick="quickAdd('Bike Fuel', 200, 'Fuel & Transit')">+₹200 Fuel</button>
+      <button class="chip" onclick="quickAdd('Swiggy / Dining', 350, 'Food & Groceries')">+₹350 Food</button>
+      <button class="chip" onclick="quickAdd('Groceries Market', 500, 'Food & Groceries')">+₹500 Market</button>
+      <button class="chip" onclick="quickAdd('Ride (Uber/Rapido)', 150, 'Fuel & Transit')">+₹150 Ride</button>
+    </div>
+
+    <div class="form-card">
+      <div class="form-title">➕ Log New Spend</div>
+      <div class="form-row">
+        <input type="date" id="expDate" required />
+        <input type="number" id="expAmount" placeholder="Amount (₹)" inputmode="decimal" required />
+      </div>
+      <div class="form-row">
+        <select id="expType">
+          <option value="Daily">Daily Running</option>
+          <option value="Fixed">Fixed / EMI</option>
+          <option value="Milestone">Project / Milestone</option>
+        </select>
+        <select id="expCat">
+          <option value="Food & Groceries">Food & Groceries</option>
+          <option value="Fuel & Transit">Fuel & Transit</option>
+          <option value="Utilities & Bills">Utilities & Bills</option>
+          <option value="Home & Interior">Home & Interior</option>
+          <option value="Loan / EMI">Loan / EMI</option>
+          <option value="Shopping & Festival">Shopping & Festival</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <input type="text" id="expNote" placeholder="Short note (e.g., Bike fuel, Swiggy, Market)" style="margin-bottom: 10px;" />
+      <button class="primary" onclick="addExpense()">Save Expense</button>
+    </div>
+
+    <!-- Search Bar -->
+    <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search notes or categories..." oninput="render()" />
+
+    <div class="tabs">
+      <button class="tab active" onclick="setSubFilter('All', this)">All Logs</button>
+      <button class="tab" onclick="setSubFilter('Daily', this)">Daily Running</button>
+      <button class="tab" onclick="setSubFilter('Fixed', this)">Fixed / EMI</button>
+      <button class="tab" onclick="setSubFilter('Milestone', this)">Milestones</button>
+    </div>
+
+    <div id="logList"></div>
   </div>
 
-  <div class="tabs">
-    <button class="tab active" onclick="setFilter('All', this)">All Logs</button>
-    <button class="tab" onclick="setFilter('Daily', this)">Daily Running</button>
-    <button class="tab" onclick="setFilter('Fixed', this)">Fixed / EMI</button>
-    <button class="tab" onclick="setFilter('Milestone', this)">Milestones</button>
+  <!-- ANALYTICS VIEW -->
+  <div id="analyticsView" class="view-section">
+    <header>
+      <h1>Spending Analytics</h1>
+    </header>
+    <div class="form-card" style="margin-top: 10px;">
+      <div class="form-title">📊 Category Breakdown</div>
+      <div id="categoryBreakdown" style="font-size: 0.9rem; color: var(--muted); line-height: 1.6;">
+        Loading analytics...
+      </div>
+    </div>
   </div>
 
-  <div id="logList"></div>
-
-  <div class="actions">
-    <button class="btn-sec" onclick="exportCSV()">Export CSV</button>
-    <button class="btn-sec" onclick="resetPreloaded()">Restore Preloaded</button>
+  <!-- SETTINGS VIEW -->
+  <div id="settingsView" class="view-section">
+    <header>
+      <h1>App & Data</h1>
+    </header>
+    <div class="action-card">
+      <div>
+        <div class="log-title">Export Data</div>
+        <div class="log-meta">Download all logs as a CSV spreadsheet</div>
+      </div>
+      <button class="tab active" onclick="exportCSV()">Export</button>
+    </div>
+    <div class="action-card">
+      <div>
+        <div class="log-title">Restore Baseline Logs</div>
+        <div class="log-meta">Reset to initial sample project logs</div>
+      </div>
+      <button class="tab" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5;" onclick="resetPreloaded()">Restore</button>
+    </div>
   </div>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="nav-bar">
+    <button class="nav-btn active" onclick="switchView('homeView', this)">
+      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Home
+    </button>
+    <button class="nav-btn" onclick="switchView('analyticsView', this)">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      Analytics
+    </button>
+    <button class="nav-btn" onclick="switchView('settingsView', this)">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      Data
+    </button>
+  </nav>
 
   <script>
     if ('serviceWorker' in navigator) {
@@ -130,7 +223,8 @@
     }
 
     const STORAGE_KEY = 'pwa_expenses_v1';
-    let currentFilter = 'All';
+    let currentSubFilter = 'All';
+    let selectedMonth = 'ALL';
 
     const defaultLogs = [
       { id: 1, date: '2026-10-05', note: 'Home Interior Project Outlay', category: 'Home & Interior', type: 'Milestone', amount: 100000 },
@@ -146,11 +240,71 @@
       return '₹' + Number(num).toLocaleString('en-IN');
     }
 
+    function updateMonthDropdown() {
+      const select = document.getElementById('monthFilter');
+      const currentVal = select.value;
+      
+      const monthsSet = new Set();
+      expenses.forEach(e => {
+        if(e.date && e.date.length >= 7) {
+          monthsSet.add(e.date.substring(0, 7));
+        }
+      });
+
+      const nowStr = new Date().toISOString().substring(0, 7);
+      monthsSet.add(nowStr);
+
+      const sortedMonths = Array.from(monthsSet).sort().reverse();
+
+      let html = '<option value="ALL">All Months (Lifetime)</option>';
+      sortedMonths.forEach(m => {
+        const [y, mm] = m.split('-');
+        const dateObj = new Date(y, mm - 1, 1);
+        const monthName = dateObj.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+        html += `<option value="${m}">${monthName}</option>`;
+      });
+
+      select.innerHTML = html;
+      select.value = sortedMonths.includes(currentVal) || currentVal === 'ALL' ? currentVal : 'ALL';
+      selectedMonth = select.value;
+    }
+
+    function changeMonth() {
+      selectedMonth = document.getElementById('monthFilter').value;
+      render();
+    }
+
+    function switchView(viewId, btn) {
+      document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+      btn.classList.add('active');
+      if(viewId === 'analyticsView') updateAnalytics();
+    }
+
+    function quickAdd(note, amount, category) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      expenses.unshift({
+        id: Date.now(),
+        date: todayStr,
+        amount: amount,
+        type: 'Daily',
+        category: category,
+        note: note
+      });
+      render();
+    }
+
     function render() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
+      updateMonthDropdown();
+
+      const monthFiltered = selectedMonth === 'ALL' 
+        ? expenses 
+        : expenses.filter(e => e.date && e.date.startsWith(selectedMonth));
 
       let dailySum = 0, fixedSum = 0, mileSum = 0;
-      expenses.forEach(item => {
+      monthFiltered.forEach(item => {
         if (item.type === 'Daily') dailySum += Number(item.amount);
         else if (item.type === 'Fixed') fixedSum += Number(item.amount);
         else if (item.type === 'Milestone') mileSum += Number(item.amount);
@@ -160,12 +314,33 @@
       document.getElementById('fixedTotal').innerText = formatINR(fixedSum);
       document.getElementById('milestoneTotal').innerText = formatINR(mileSum);
 
+      // Calculate daily average and progress against a standard ₹15,000 monthly target
+      const targetBudget = 15000;
+      let pct = Math.min(Math.round((dailySum / targetBudget) * 100), 100);
+      document.getElementById('progressBar').style.width = pct + '%';
+      
+      const daysCount = 30; // rough month average
+      const dailyAvg = Math.round(dailySum / daysCount);
+      document.getElementById('dailyAvgNote').innerText = `Avg: ${formatINR(dailyAvg)}/day`;
+
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
       const listEl = document.getElementById('logList');
       listEl.innerHTML = '';
 
-      const filtered = expenses
-        .filter(e => currentFilter === 'All' || e.type === currentFilter)
+      const filtered = monthFiltered
+        .filter(e => currentSubFilter === 'All' || e.type === currentSubFilter)
+        .filter(e => {
+          if(!searchQuery) return true;
+          return (e.note && e.note.toLowerCase().includes(searchQuery)) || 
+                 (e.category && e.category.toLowerCase().includes(searchQuery));
+        })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      if(filtered.length === 0) {
+        listEl.innerHTML = '<div style="text-align:center; color:var(--muted); padding: 24px; font-size: 0.85rem; font-weight:600;">No matching expenses found.</div>';
+        return;
+      }
 
       filtered.forEach(item => {
         const div = document.createElement('div');
@@ -182,6 +357,39 @@
         `;
         listEl.appendChild(div);
       });
+    }
+
+    function updateAnalytics() {
+      const monthFiltered = selectedMonth === 'ALL' 
+        ? expenses 
+        : expenses.filter(e => e.date && e.date.startsWith(selectedMonth));
+
+      const cats = {};
+      let total = 0;
+      monthFiltered.forEach(e => {
+        cats[e.category] = (cats[e.category] || 0) + Number(e.amount);
+        total += Number(e.amount);
+      });
+
+      const breakdownEl = document.getElementById('categoryBreakdown');
+      if(total === 0) {
+        breakdownEl.innerHTML = `No data recorded for this selection.`;
+        return;
+      }
+
+      let html = `<div style="margin-bottom: 12px; font-weight:800; color:var(--navy); font-size:1.05rem;">Total Spend: ${formatINR(total)}</div>`;
+      for(let cat in cats) {
+        let pct = Math.round((cats[cat] / total) * 100);
+        html += `<div style="margin-bottom: 10px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; color:var(--text);">
+            <span>${cat}</span><span>${formatINR(cats[cat])} (${pct}%)</span>
+          </div>
+          <div style="background:#e2e8f0; height:7px; border-radius:4px; margin-top:4px; overflow:hidden;">
+            <div style="background:var(--maroon); width:${pct}%; height:100%;"></div>
+          </div>
+        </div>`;
+      }
+      breakdownEl.innerHTML = html;
     }
 
     function addExpense() {
@@ -215,15 +423,15 @@
       render();
     }
 
-    function setFilter(filter, btn) {
-      currentFilter = filter;
+    function setSubFilter(filter, btn) {
+      currentSubFilter = filter;
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       btn.classList.add('active');
       render();
     }
 
     function resetPreloaded() {
-      if (confirm('Restore default October baseline logs? This will reset current changes.')) {
+      if (confirm('Restore default baseline logs?')) {
         expenses = [...defaultLogs];
         render();
       }
@@ -245,3 +453,4 @@
   </script>
 </body>
 </html>
+
