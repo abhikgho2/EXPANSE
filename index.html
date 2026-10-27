@@ -7,7 +7,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2331/2331941.png" />
+  <link rel="icon" type="image/png" href="./logo.png" />
   <title>Daily Expense Tracker</title>
   <style>
     :root {
@@ -36,9 +36,9 @@
     .hero-amount { font-size: 2.2rem; font-weight: 800; margin: 6px 0; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .hero-sub { font-size: 0.78rem; color: #93c5fd; opacity: 0.95; display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
 
-    /* Progress bar for daily spending */
-    .progress-bar-bg { background: rgba(255,255,255,0.2); height: 6px; border-radius: 3px; width: 100%; margin-top: 8px; overflow: hidden; }
-    .progress-bar-fill { background: #34d399; height: 100%; width: 0%; transition: width 0.3s ease; }
+    /* Progress bar for monthly budget */
+    .progress-bar-bg { background: rgba(255,255,255,0.2); height: 7px; border-radius: 4px; width: 100%; margin-top: 8px; overflow: hidden; }
+    .progress-bar-fill { background: #34d399; height: 100%; width: 0%; transition: width 0.3s ease, background-color 0.3s ease; }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
     .mini-card { background: var(--card-bg); padding: 16px; border-radius: 14px; border: 1.5px solid var(--border); box-shadow: 0 6px 16px rgba(0,0,0,0.06); position: relative; overflow: hidden; }
@@ -97,10 +97,10 @@
     </header>
 
     <div class="hero-card">
-      <div class="hero-label">Daily Running Expenditure</div>
-      <div class="hero-amount" id="dailyTotal">₹0</div>
+      <div class="hero-label">Total Monthly Outlay</div>
+      <div class="hero-amount" id="totalMonthSpend">₹0</div>
       <div class="hero-sub">
-        <span id="dailyBudgetNote">Monthly Target: ₹15,000</span>
+        <span id="budgetStatusLabel">Budget Cap: ₹30,000</span>
         <span id="dailyAvgNote">Avg: ₹0/day</span>
       </div>
       <div class="progress-bar-bg">
@@ -110,22 +110,22 @@
 
     <div class="grid-2">
       <div class="mini-card">
+        <div class="mini-label">Daily Running</div>
+        <div class="mini-val" id="dailyTotal" style="color: var(--daily);">₹0</div>
+      </div>
+      <div class="mini-card">
         <div class="mini-label">Fixed & EMI</div>
         <div class="mini-val" id="fixedTotal" style="color: var(--fixed);">₹0</div>
-      </div>
-      <div class="mini-card" style="border-left-color: var(--navy);">
-        <div class="mini-label">Projects & Milestones</div>
-        <div class="mini-val" id="milestoneTotal" style="color: var(--milestone);">₹0</div>
       </div>
     </div>
 
     <!-- Quick Tap Chips for Everyday Spends -->
     <div class="quick-chips">
       <span style="font-size: 0.75rem; font-weight: 700; color: var(--muted); align-self: center;">⚡ Quick Add:</span>
-      <button class="chip" onclick="quickAdd('Bike Fuel', 200, 'Fuel & Transit')">+₹200 Fuel</button>
-      <button class="chip" onclick="quickAdd('Swiggy / Dining', 350, 'Food & Groceries')">+₹350 Food</button>
-      <button class="chip" onclick="quickAdd('Groceries Market', 500, 'Food & Groceries')">+₹500 Market</button>
-      <button class="chip" onclick="quickAdd('Ride (Uber/Rapido)', 150, 'Fuel & Transit')">+₹150 Ride</button>
+      <button class="chip" onclick="quickAdd('Bike Fuel', 200, 'Fuel & Transit', 'UPI')">+₹200 Fuel</button>
+      <button class="chip" onclick="quickAdd('Swiggy / Dining', 350, 'Food & Groceries', 'UPI')">+₹350 Food</button>
+      <button class="chip" onclick="quickAdd('Groceries Market', 500, 'Food & Groceries', 'Cash')">+₹500 Market</button>
+      <button class="chip" onclick="quickAdd('Ride (Uber/Rapido)', 150, 'Fuel & Transit', 'UPI')">+₹150 Ride</button>
     </div>
 
     <div class="form-card">
@@ -150,7 +150,15 @@
           <option value="Other">Other</option>
         </select>
       </div>
-      <input type="text" id="expNote" placeholder="Short note (e.g., Bike fuel, Swiggy, Market)" style="margin-bottom: 10px;" />
+      <div class="form-row" style="margin-bottom: 10px;">
+        <select id="expPaymentMode">
+          <option value="UPI">UPI (GPay / PhonePe)</option>
+          <option value="Credit Card">Credit Card</option>
+          <option value="Debit Card">Debit Card</option>
+          <option value="Cash">Cash</option>
+        </select>
+        <input type="text" id="expNote" placeholder="Short note (e.g., Swiggy, Fuel)" />
+      </div>
       <button class="primary" onclick="addExpense()">Save Expense</button>
     </div>
 
@@ -173,7 +181,7 @@
       <h1>Spending Analytics</h1>
     </header>
     <div class="form-card" style="margin-top: 10px;">
-      <div class="form-title">📊 Category Breakdown</div>
+      <div class="form-title">📊 Category Breakdown & Payment Modes</div>
       <div id="categoryBreakdown" style="font-size: 0.9rem; color: var(--muted); line-height: 1.6;">
         Loading analytics...
       </div>
@@ -185,6 +193,11 @@
     <header>
       <h1>App & Data</h1>
     </header>
+    <div class="form-card" style="margin-bottom: 12px;">
+      <div class="form-title">⚙️ Monthly Budget Limit</div>
+      <div style="font-size: 0.82rem; color: var(--muted); margin-bottom: 8px;">Set your maximum target spend per month (₹)</div>
+      <input type="number" id="monthlyBudgetInput" value="30000" onchange="updateBudgetLimit()" />
+    </div>
     <div class="action-card">
       <div>
         <div class="log-title">Export Data</div>
@@ -225,12 +238,14 @@
     const STORAGE_KEY = 'pwa_expenses_v1';
     let currentSubFilter = 'All';
     let selectedMonth = 'ALL';
+    let monthlyBudget = localStorage.getItem('pwa_budget') || 30000;
+    document.getElementById('monthlyBudgetInput').value = monthlyBudget;
 
     const defaultLogs = [
-      { id: 1, date: '2026-10-05', note: 'Home Interior Project Outlay', category: 'Home & Interior', type: 'Milestone', amount: 100000 },
-      { id: 2, date: '2026-10-10', note: 'Housing Loan Monthly EMI', category: 'Loan / EMI', type: 'Fixed', amount: 20741 },
-      { id: 3, date: '2026-10-18', note: 'Festival Shopping & Registry Outlays', category: 'Shopping & Festival', type: 'Milestone', amount: 22203 },
-      { id: 4, date: '2026-10-25', note: 'October Baseline Running Spend (Fuel, Utilities, Food)', category: 'Food & Groceries', type: 'Daily', amount: 13130 }
+      { id: 1, date: '2026-10-05', note: 'Home Interior Project Outlay', category: 'Home & Interior', type: 'Milestone', amount: 100000, paymentMode: 'UPI' },
+      { id: 2, date: '2026-10-10', note: 'Housing Loan Monthly EMI', category: 'Loan / EMI', type: 'Fixed', amount: 20741, paymentMode: 'Credit Card' },
+      { id: 3, date: '2026-10-18', note: 'Festival Shopping & Registry Outlays', category: 'Shopping & Festival', type: 'Milestone', amount: 22203, paymentMode: 'UPI' },
+      { id: 4, date: '2026-10-25', note: 'October Baseline Running Spend (Fuel, Utilities, Food)', category: 'Food & Groceries', type: 'Daily', amount: 13130, paymentMode: 'Cash' }
     ];
 
     let expenses = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultLogs;
@@ -238,6 +253,12 @@
 
     function formatINR(num) {
       return '₹' + Number(num).toLocaleString('en-IN');
+    }
+
+    function updateBudgetLimit() {
+      monthlyBudget = parseFloat(document.getElementById('monthlyBudgetInput').value) || 30000;
+      localStorage.setItem('pwa_budget', monthlyBudget);
+      render();
     }
 
     function updateMonthDropdown() {
@@ -282,7 +303,7 @@
       if(viewId === 'analyticsView') updateAnalytics();
     }
 
-    function quickAdd(note, amount, category) {
+    function quickAdd(note, amount, category, paymentMode) {
       const todayStr = new Date().toISOString().split('T')[0];
       expenses.unshift({
         id: Date.now(),
@@ -290,7 +311,8 @@
         amount: amount,
         type: 'Daily',
         category: category,
-        note: note
+        note: note,
+        paymentMode: paymentMode
       });
       render();
     }
@@ -303,28 +325,34 @@
         ? expenses 
         : expenses.filter(e => e.date && e.date.startsWith(selectedMonth));
 
-      let dailySum = 0, fixedSum = 0, mileSum = 0;
+      let dailySum = 0, fixedSum = 0, milestoneSum = 0, grandTotal = 0;
       monthFiltered.forEach(item => {
-        if (item.type === 'Daily') dailySum += Number(item.amount);
-        else if (item.type === 'Fixed') fixedSum += Number(item.amount);
-        else if (item.type === 'Milestone') mileSum += Number(item.amount);
+        const amt = Number(item.amount);
+        grandTotal += amt;
+        if (item.type === 'Daily') dailySum += amt;
+        else if (item.type === 'Fixed') fixedSum += amt;
+        else if (item.type === 'Milestone') milestoneSum += amt;
       });
 
+      document.getElementById('totalMonthSpend').innerText = formatINR(grandTotal);
       document.getElementById('dailyTotal').innerText = formatINR(dailySum);
       document.getElementById('fixedTotal').innerText = formatINR(fixedSum);
-      document.getElementById('milestoneTotal').innerText = formatINR(mileSum);
 
-      // Calculate daily average and progress against a standard ₹15,000 monthly target
-      const targetBudget = 15000;
-      let pct = Math.min(Math.round((dailySum / targetBudget) * 100), 100);
-      document.getElementById('progressBar').style.width = pct + '%';
+      // Budget Progress Bar & Warning Indicator
+      let pct = Math.min(Math.round((grandTotal / monthlyBudget) * 100), 100);
+      const barFill = document.getElementById('progressBar');
+      barFill.style.width = pct + '%';
       
-      const daysCount = 30; // rough month average
-      const dailyAvg = Math.round(dailySum / daysCount);
+      if(pct > 90) barFill.style.backgroundColor = '#ef4444'; // Red alert
+      else if(pct > 75) barFill.style.backgroundColor = '#f59e0b'; // Orange warning
+      else barFill.style.backgroundColor = '#34d399'; // Green safe
+
+      document.getElementById('budgetStatusLabel').innerText = `Cap: ${formatINR(monthlyBudget)} (${pct}%)`;
+      
+      const dailyAvg = Math.round(grandTotal / 30);
       document.getElementById('dailyAvgNote').innerText = `Avg: ${formatINR(dailyAvg)}/day`;
 
       const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-
       const listEl = document.getElementById('logList');
       listEl.innerHTML = '';
 
@@ -344,113 +372,4 @@
 
       filtered.forEach(item => {
         const div = document.createElement('div');
-        div.className = `log-item type-${item.type}`;
-        div.innerHTML = `
-          <div>
-            <div class="log-title">${item.note || item.category}</div>
-            <div class="log-meta">${item.date} • ${item.category} (${item.type})</div>
-          </div>
-          <div class="log-right">
-            <span class="log-amt">${formatINR(item.amount)}</span>
-            <button class="del-btn" onclick="deleteExpense(${item.id})" title="Delete">✕</button>
-          </div>
-        `;
-        listEl.appendChild(div);
-      });
-    }
-
-    function updateAnalytics() {
-      const monthFiltered = selectedMonth === 'ALL' 
-        ? expenses 
-        : expenses.filter(e => e.date && e.date.startsWith(selectedMonth));
-
-      const cats = {};
-      let total = 0;
-      monthFiltered.forEach(e => {
-        cats[e.category] = (cats[e.category] || 0) + Number(e.amount);
-        total += Number(e.amount);
-      });
-
-      const breakdownEl = document.getElementById('categoryBreakdown');
-      if(total === 0) {
-        breakdownEl.innerHTML = `No data recorded for this selection.`;
-        return;
-      }
-
-      let html = `<div style="margin-bottom: 12px; font-weight:800; color:var(--navy); font-size:1.05rem;">Total Spend: ${formatINR(total)}</div>`;
-      for(let cat in cats) {
-        let pct = Math.round((cats[cat] / total) * 100);
-        html += `<div style="margin-bottom: 10px;">
-          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; color:var(--text);">
-            <span>${cat}</span><span>${formatINR(cats[cat])} (${pct}%)</span>
-          </div>
-          <div style="background:#e2e8f0; height:7px; border-radius:4px; margin-top:4px; overflow:hidden;">
-            <div style="background:var(--maroon); width:${pct}%; height:100%;"></div>
-          </div>
-        </div>`;
-      }
-      breakdownEl.innerHTML = html;
-    }
-
-    function addExpense() {
-      const date = document.getElementById('expDate').value;
-      const amount = parseFloat(document.getElementById('expAmount').value);
-      const type = document.getElementById('expType').value;
-      const category = document.getElementById('expCat').value;
-      const note = document.getElementById('expNote').value.trim();
-
-      if (!date || isNaN(amount) || amount <= 0) {
-        alert('Please enter a valid date and amount.');
-        return;
-      }
-
-      expenses.unshift({
-        id: Date.now(),
-        date,
-        amount,
-        type,
-        category,
-        note: note || category
-      });
-
-      document.getElementById('expAmount').value = '';
-      document.getElementById('expNote').value = '';
-      render();
-    }
-
-    function deleteExpense(id) {
-      expenses = expenses.filter(e => e.id !== id);
-      render();
-    }
-
-    function setSubFilter(filter, btn) {
-      currentSubFilter = filter;
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      render();
-    }
-
-    function resetPreloaded() {
-      if (confirm('Restore default baseline logs?')) {
-        expenses = [...defaultLogs];
-        render();
-      }
-    }
-
-    function exportCSV() {
-      let csv = 'Date,Type,Category,Note,Amount\n';
-      expenses.forEach(e => {
-        csv += `${e.date},${e.type},"${e.category}","${(e.note || '').replace(/"/g, '""')}",${e.amount}\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'expenses_backup.csv';
-      a.click();
-    }
-
-    render();
-  </script>
-</body>
-</html>
-
+        d
